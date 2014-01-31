@@ -99,6 +99,28 @@ func TestBoardInBlock(t *testing.T) {
 	assertTrue(testBlock([]Pos{Pos{X, 1, 1}, Pos{X, 2, 0}}), "should be are in block if same marks in diagonal - IV", t)
 }
 
+func TestLastMark(t *testing.T) {
+	b := &Board{}
+	b.Start()
+	check(b.Put(O, 1, 2), t)
+	p := b.LastMark()
+	assertTrue(p.m == O, "last mark failed - mark", t)
+	assertTrue(p.col == 2, "last mark failed - col", t)
+	assertTrue(p.row == 1, "last mark failed - row", t)
+
+}
+
+func TestCorner(t *testing.T) {
+	b := Board{}
+	b.Start()
+	assertFalse(b.Corner(1, 2), "failed corner 1, 2", t)
+	assertTrue(b.Corner(0, 0), "failed corner 0, 0", t)
+	assertFalse(b.Corner(1, 1), "failed corner 1, 1", t)
+	assertTrue(b.Corner(2, 2), "failed corner 2, 2", t)
+	assertTrue(b.Corner(2, 0), "failed corner 2, 0", t)
+	assertTrue(b.Corner(0, 2), "failed corner 0, 2", t)
+}
+
 func assertTrue(cond bool, msg string, t *testing.T) {
 	if !cond {
 		t.Error(msg)
@@ -108,5 +130,11 @@ func assertTrue(cond bool, msg string, t *testing.T) {
 func assertFalse(cond bool, msg string, t *testing.T) {
 	if cond {
 		t.Error(msg)
+	}
+}
+
+func check(err error, t *testing.T) {
+	if err != nil {
+		t.Fatal(err)
 	}
 }

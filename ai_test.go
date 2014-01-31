@@ -1,13 +1,15 @@
 package tic_tac_toe
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestPlay(t *testing.T) {
 	b := &Board{}
 	b.Start()
-	Play(b, X)
+	check(Play(b, X), t)
 	if b.FreePositions() != 8 {
-		t.Error("play")
+		t.Errorf("free positions should be 8 but is %d", b.FreePositions())
 	}
 }
 
@@ -38,4 +40,39 @@ func TestPlayStopWhenBoardFull(t *testing.T) {
 		t.Error("board is full")
 	}
 
+}
+
+func TestFirstPlayMustBeACornerToGuaranteeWinOrDraw(t *testing.T) {
+	b := Board{}
+	b.Start()
+
+	check(Play(&b, X), t)
+	p := b.LastMark()
+	if !b.Corner(p.row, p.col) {
+		t.Error("first play should be a corner")
+	}
+}
+
+func TestSecondPlayResponseToCornerWithACenter(t *testing.T) {
+	b := Board{}
+	b.Start()
+	check(b.Put(X, 0, 0), t)
+
+	check(Play(&b, O), t)
+	p := b.LastMark()
+	if p.row != 1 || p.col != 1 {
+		t.Errorf("second play should be a center but got a %d %d", p.row, p.col)
+	}
+}
+
+func TestSecondPlayResponseToCenterWithACorner(t *testing.T) {
+	b := Board{}
+	b.Start()
+	check(b.Put(X, 1, 1), t)
+
+	check(Play(&b, O), t)
+	p := b.LastMark()
+	if !b.Corner(p.row, p.col) {
+		t.Errorf("second play should be a corner but got a %d %d", p.row, p.col)
+	}
 }

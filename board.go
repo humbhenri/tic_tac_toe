@@ -82,6 +82,17 @@ func (b *Board) Block(m Mark) bool {
 
 }
 
+func (b *Board) LastMark() *Pos {
+	if len(b.pos) == 0 {
+		return nil
+	}
+	return &b.pos[len(b.pos)-1]
+}
+
+func (b *Board) Corner(i, j int) bool {
+	return (i == 0 && (j == 0 || j == 2)) || (i == 2 && (j == 0 || j == 2))
+}
+
 type OccupiedError struct {
 	m   Mark
 	row int
