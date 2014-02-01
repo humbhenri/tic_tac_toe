@@ -76,3 +76,14 @@ func TestSecondPlayResponseToCenterWithACorner(t *testing.T) {
 		t.Errorf("second play should be a corner but got a %d %d", p.row, p.col)
 	}
 }
+
+func TestSecondPlayResponseToEdgeMustBeACenter(t *testing.T) {
+	b := Board{}
+	b.Start()
+	check(b.Put(X, 0, 1), t)
+	check(Play(&b, O), t)
+	p := b.LastMark()
+	if p.row != 1 || p.col != 1 {
+		t.Errorf("second play response to edge should be a center but got a %d %d", p.row, p.col)
+	}
+}

@@ -18,12 +18,13 @@ func Play(b *Board, m Mark) error {
 
 func doSecondPlay(b *Board, m Mark) error {
 	p := b.LastMark()
-	if b.Corner(p.row, p.col) {
+	if b.Corner(p.row, p.col) || b.Edge(p.row, p.col) {
 		return markCenter(b, m)
 	}
 	if p.row == 1 && p.col == 1 {
 		return markACorner(b, m)
 	}
+
 	return markRandom(b, m)
 }
 

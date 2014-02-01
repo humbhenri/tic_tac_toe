@@ -1,7 +1,10 @@
 package tic_tac_toe
 
 import (
+	"bytes"
+	"fmt"
 	"strconv"
+	"strings"
 )
 
 type Mark int
@@ -13,11 +16,12 @@ func (m Mark) String() string {
 	case X:
 		return "X"
 	}
-	return "ERROR"
+	return " "
 }
 
 const (
-	O Mark = iota
+	None Mark = iota
+	O
 	X
 )
 
@@ -25,6 +29,10 @@ type Pos struct {
 	m   Mark
 	row int
 	col int
+}
+
+func (p *Pos) String() string {
+	return fmt.Sprintf("[%s, %d, %d]", p.m.String(), p.row, p.col)
 }
 
 type Board struct {
@@ -91,6 +99,66 @@ func (b *Board) LastMark() *Pos {
 
 func (b *Board) Corner(i, j int) bool {
 	return (i == 0 && (j == 0 || j == 2)) || (i == 2 && (j == 0 || j == 2))
+}
+
+func (b *Board) String() string {
+	var buf bytes.Buffer
+	var grid [3][3]string
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			grid[i][j] = None.String()
+		}
+	}
+	for _, p := range b.pos {
+		grid[p.row][p.col] = p.m.String()
+	}
+	var rows []string
+	for i := 0; i < 3; i++ {
+		rows = append(rows, strings.Join(grid[i][:], " | "))
+	}
+	buf.WriteString(strings.Join(rows, "\n---------\n"))
+	return buf.String()
+}
+
+func (b *Board) Edge(i, j int) bool {
+	return (i == 0 && j == 1) ||
+		(i == 1 && (j == 0 || j == 2)) ||
+		(i == 2 && j == 1)
+}
+
+func (b *Board) Win() Mark {
+	for i := 0; i < len(b.pos); i++ {
+		for j := 0; j < len(b.pos); j++ {
+			if i == j {
+				continue
+			}
+			for k := 0; k < len(b.pos); k++ {
+				if j == k || i == k {
+					continue
+				}
+				p1 := b.pos[i]
+				p2 := b.pos[j]
+				p3 := b.pos[k]
+				if p1.m == p2.m && p1.m == p3.m {
+					if p1.row == p2.row && p1.row == p3.row {
+						return p1.m
+					}
+					if p1.col == p2.col && p1.col == p3.col {
+						return p1.m
+					}
+					if p1.row == 0 && p1.col == 0 && p2.row == 1 && p2.col == 1 && p3.row == 2 && p3.col == 2 {
+						return p1.m
+					}
+					if p1.row == 0 && p1.col == 2 && p2.row == 1 && p2.col == 1 && p3.row == 2 && p3.col == 0 {
+						return p1.m
+					}
+				}
+
+			}
+		}
+	}
+
+	return None
 }
 
 type OccupiedError struct {
