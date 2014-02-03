@@ -175,6 +175,34 @@ func TestWin(t *testing.T) {
 	assertTrue(b.Win() == None, "beginning of the game", t)
 }
 
+func TestFork(t *testing.T) {
+
+	test := func(p1, p2, expected Pos) {
+		b := Board{}
+		b.Start()
+		b.Put(X, p1.row, p1.col)
+		b.Put(X, p2.row, p2.col)
+		p := b.Fork(X)
+		if p == nil {
+			t.Error("fork returned nil")
+		} else {
+			if p.row != expected.row || p.col != expected.col {
+				t.Errorf("fork should return %d %d for fork but was %d %d", expected.row,
+					expected.col, p.row, p.col)
+			}
+		}
+	}
+
+	test(Pos{X, 0, 0},
+		Pos{X, 1, 0}, Pos{X, 2, 0})
+
+	test(Pos{X, 0, 0}, Pos{X, 2, 0}, Pos{X, 1, 0})
+	test(Pos{X, 0, 0}, Pos{X, 1, 1}, Pos{X, 2, 2})
+	test(Pos{X, 0, 2}, Pos{X, 2, 0}, Pos{X, 1, 1})
+	test(Pos{X, 1, 2}, Pos{X, 2, 2}, Pos{X, 0, 2})
+
+}
+
 func assertTrue(cond bool, msg string, t *testing.T) {
 	if !cond {
 		t.Error(msg)

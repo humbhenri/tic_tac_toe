@@ -161,6 +161,45 @@ func (b *Board) Win() Mark {
 	return None
 }
 
+func Abs(i int) int {
+	if i < 0 {
+		return -i
+	}
+	return i
+}
+
+func (b *Board) Fork(m Mark) *Pos {
+	var diff [3][3]int
+	diff[1][2] = 0
+	diff[2][1] = 0
+	diff[0][2] = 1
+	diff[2][0] = 1
+	diff[0][1] = 2
+	diff[1][0] = 2
+
+	for i := 0; i < len(b.pos); i++ {
+		for j := 0; j < len(b.pos); j++ {
+			if i == j {
+				continue
+			}
+			p1 := b.pos[i]
+			p2 := b.pos[j]
+			if p1.m == p2.m {
+				if p1.row == p2.row {
+					return &Pos{p1.m, p1.row, diff[p1.col][p2.col]}
+				}
+				if p1.col == p2.col {
+					return &Pos{p1.m, diff[p1.row][p2.row], p1.col}
+				}
+				if Abs(p1.row-p2.row) == Abs(p1.col-p2.col) {
+					return &Pos{p1.m, diff[p1.row][p2.row], diff[p1.col][p2.col]}
+				}
+			}
+		}
+	}
+	return nil
+}
+
 type OccupiedError struct {
 	m   Mark
 	row int
