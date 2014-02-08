@@ -73,30 +73,6 @@ func (b *Board) Occupied(i, j int) bool {
 	return false
 }
 
-func (b *Board) Block(m Mark) bool {
-
-	for i := 0; i < len(b.pos); i++ {
-		for j := 0; j < len(b.pos); j++ {
-			if i != j {
-				p1 := b.pos[i]
-				p2 := b.pos[j]
-				if p1.m == p2.m &&
-					(p1.col == p2.col ||
-						p1.row == p2.row ||
-						(p1.row == p1.col && p2.row == p2.col) ||
-						(p1.row == p2.col && p1.col == p2.row) ||
-						(p1.row == 1 && p1.col == 1 && p2.row == 0 && p2.col == 2) ||
-						(p1.row == 1 && p1.col == 1 && p2.row == 2 && p2.col == 0)) {
-					return true
-				}
-			}
-		}
-	}
-
-	return false
-
-}
-
 func (b *Board) LastMark() *Pos {
 	if len(b.pos) == 0 {
 		return nil
