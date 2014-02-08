@@ -200,7 +200,20 @@ func TestFork(t *testing.T) {
 	test(Pos{X, 0, 0}, Pos{X, 1, 1}, Pos{X, 2, 2})
 	test(Pos{X, 0, 2}, Pos{X, 2, 0}, Pos{X, 1, 1})
 	test(Pos{X, 1, 2}, Pos{X, 2, 2}, Pos{X, 0, 2})
+}
 
+func TestForkShouldNotReturnOccupiedPos(t *testing.T) {
+	b := Board{}
+	b.Start()
+	b.Put(X, 0, 0)
+	b.Put(X, 2, 2)
+	b.Put(X, 1, 1)
+
+	p := b.Fork(X)
+
+	if p != nil {
+		t.Errorf("p should be nil - occupied position - but was %s", p.String())
+	}
 }
 
 func assertTrue(cond bool, msg string, t *testing.T) {

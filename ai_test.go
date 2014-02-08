@@ -88,15 +88,15 @@ func TestSecondPlayResponseToEdgeMustBeACenter(t *testing.T) {
 	}
 }
 
-// func TestPlayWinIfInFork(t *testing.T) {
-// 	b := Board{}
-// 	b.Start()
-// 	b.Put(X, 0, 0)
-// 	b.Put(X, 1, 1)
-// 	check(Play(&b, X), t)
-// 	p := b.LastMark()
-// 	if p.row != 2 || p.col != 2 {
-// 		t.Errorf("play should be put in position 2, 2 but was %d, %d instead",
-// 			p.row, p.col)
-// 	}
-// }
+func TestPlayWinIfInFork(t *testing.T) {
+	b := Board{}
+	b.Start()
+	b.Put(X, 0, 0)
+	b.Put(X, 1, 1)
+	check(Play(&b, X), t)
+	p := b.LastMark()
+	if p.row != 2 || p.col != 2 {
+		t.Errorf("play should be put in position 2, 2 but was %d, %d instead",
+			p.row, p.col)
+	}
+}

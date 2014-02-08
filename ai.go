@@ -13,6 +13,10 @@ func Play(b *Board, m Mark) error {
 		return doSecondPlay(b, m)
 	}
 
+	if p := b.Fork(m); p != nil {
+		return b.Put(m, p.row, p.col)
+	}
+
 	return markRandom(b, m)
 }
 

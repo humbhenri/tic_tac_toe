@@ -56,14 +56,21 @@ func (b *Board) Put(m Mark, i, j int) error {
 	if b.free == 0 {
 		return FullError{}
 	}
-	for _, p := range b.pos {
-		if p.row == i && p.col == j {
-			return OccupiedError{m, i, j}
-		}
+	if b.Occupied(i, j) {
+		return OccupiedError{m, i, j}
 	}
 	b.pos = append(b.pos, Pos{m, i, j})
 	b.free--
 	return nil
+}
+
+func (b *Board) Occupied(i, j int) bool {
+	for _, p := range b.pos {
+		if p.row == i && p.col == j && p.m != None {
+			return true
+		}
+	}
+	return false
 }
 
 func (b *Board) Block(m Mark) bool {
@@ -168,7 +175,7 @@ func Abs(i int) int {
 	return i
 }
 
-func (b *Board) Fork(m Mark) *Pos {
+func (b *Board) Fork(m Mark) (p *Pos) {
 	var diff [3][3]int
 	diff[1][2] = 0
 	diff[2][1] = 0
@@ -186,17 +193,27 @@ func (b *Board) Fork(m Mark) *Pos {
 			p2 := b.pos[j]
 			if p1.m == p2.m {
 				if p1.row == p2.row {
-					return &Pos{p1.m, p1.row, diff[p1.col][p2.col]}
+					p = &Pos{p1.m, p1.row, diff[p1.col][p2.col]}
+					if !b.Occupied(p.row, p.col) {
+						return
+					}
 				}
 				if p1.col == p2.col {
-					return &Pos{p1.m, diff[p1.row][p2.row], p1.col}
+					p = &Pos{p1.m, diff[p1.row][p2.row], p1.col}
+					if !b.Occupied(p.row, p.col) {
+						return
+					}
 				}
 				if Abs(p1.row-p2.row) == Abs(p1.col-p2.col) {
-					return &Pos{p1.m, diff[p1.row][p2.row], diff[p1.col][p2.col]}
+					p = &Pos{p1.m, diff[p1.row][p2.row], diff[p1.col][p2.col]}
+					if !b.Occupied(p.row, p.col) {
+						return
+					}
 				}
 			}
 		}
 	}
+
 	return nil
 }
 
