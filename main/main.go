@@ -15,7 +15,7 @@ func main() {
 
 	fmt.Println("Listening on port 8080.")
 
-	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 
