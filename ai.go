@@ -14,7 +14,7 @@ func Play(b *Board, m Mark) error {
 	}
 
 	if p := b.Fork(m); p != nil {
-		return b.Put(m, p.row, p.col)
+		return b.Put(m, p.Row, p.Col)
 	}
 
 	return markRandom(b, m)
@@ -22,10 +22,10 @@ func Play(b *Board, m Mark) error {
 
 func doSecondPlay(b *Board, m Mark) error {
 	p := b.LastMark()
-	if b.Corner(p.row, p.col) || b.Edge(p.row, p.col) {
+	if b.Corner(p.Row, p.Col) || b.Edge(p.Row, p.Col) {
 		return markCenter(b, m)
 	}
-	if p.row == 1 && p.col == 1 {
+	if p.Row == 1 && p.Col == 1 {
 		return markACorner(b, m)
 	}
 

@@ -78,9 +78,9 @@ func TestLastMark(t *testing.T) {
 	b.Start()
 	check(b.Put(O, 1, 2), t)
 	p := b.LastMark()
-	assertTrue(p.m == O, "last mark failed - mark", t)
-	assertTrue(p.col == 2, "last mark failed - col", t)
-	assertTrue(p.row == 1, "last mark failed - row", t)
+	assertTrue(p.M == O, "last mark failed - mark", t)
+	assertTrue(p.Col == 2, "last mark failed - col", t)
+	assertTrue(p.Row == 1, "last mark failed - row", t)
 
 }
 
@@ -154,15 +154,15 @@ func TestFork(t *testing.T) {
 	test := func(p1, p2, expected Pos) {
 		b := Board{}
 		b.Start()
-		b.Put(X, p1.row, p1.col)
-		b.Put(X, p2.row, p2.col)
+		b.Put(X, p1.Row, p1.Col)
+		b.Put(X, p2.Row, p2.Col)
 		p := b.Fork(X)
 		if p == nil {
 			t.Error("fork returned nil")
 		} else {
-			if p.row != expected.row || p.col != expected.col {
-				t.Errorf("fork should return %d %d for fork but was %d %d", expected.row,
-					expected.col, p.row, p.col)
+			if p.Row != expected.Row || p.Col != expected.Col {
+				t.Errorf("fork should return %d %d for fork but was %d %d", expected.Row,
+					expected.Col, p.Row, p.Col)
 			}
 		}
 	}

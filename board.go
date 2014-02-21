@@ -26,47 +26,47 @@ const (
 )
 
 type Pos struct {
-	m   Mark
-	row int
-	col int
+	M   Mark
+	Row int
+	Col int
 }
 
 func (p *Pos) String() string {
-	return fmt.Sprintf("[%s, %d, %d]", p.m.String(), p.row, p.col)
+	return fmt.Sprintf("[%s, %d, %d]", p.M.String(), p.Row, p.Col)
 }
 
 type Board struct {
-	free int
-	pos  []Pos
+	Free int
+	Pos  []Pos
 }
 
 func (b *Board) Start() {
-	b.free = 9
-	b.pos = []Pos{}
+	b.Free = 9
+	b.Pos = []Pos{}
 }
 
 func (b *Board) FreePositions() int {
-	return b.free
+	return b.Free
 }
 
 func (b *Board) Put(m Mark, i, j int) error {
 	if i < 0 || i > 2 || j < 0 || j > 2 {
 		return InvalidError{i, j}
 	}
-	if b.free == 0 {
+	if b.Free == 0 {
 		return FullError{}
 	}
 	if b.Occupied(i, j) {
 		return OccupiedError{m, i, j}
 	}
-	b.pos = append(b.pos, Pos{m, i, j})
-	b.free--
+	b.Pos = append(b.Pos, Pos{m, i, j})
+	b.Free--
 	return nil
 }
 
 func (b *Board) Occupied(i, j int) bool {
-	for _, p := range b.pos {
-		if p.row == i && p.col == j && p.m != None {
+	for _, p := range b.Pos {
+		if p.Row == i && p.Col == j && p.M != None {
 			return true
 		}
 	}
@@ -74,10 +74,10 @@ func (b *Board) Occupied(i, j int) bool {
 }
 
 func (b *Board) LastMark() *Pos {
-	if len(b.pos) == 0 {
+	if len(b.Pos) == 0 {
 		return nil
 	}
-	return &b.pos[len(b.pos)-1]
+	return &b.Pos[len(b.Pos)-1]
 }
 
 func (b *Board) Corner(i, j int) bool {
@@ -92,8 +92,8 @@ func (b *Board) String() string {
 			grid[i][j] = None.String()
 		}
 	}
-	for _, p := range b.pos {
-		grid[p.row][p.col] = p.m.String()
+	for _, p := range b.Pos {
+		grid[p.Row][p.Col] = p.M.String()
 	}
 	var rows []string
 	for i := 0; i < 3; i++ {
@@ -110,30 +110,30 @@ func (b *Board) Edge(i, j int) bool {
 }
 
 func (b *Board) Win() Mark {
-	for i := 0; i < len(b.pos); i++ {
-		for j := 0; j < len(b.pos); j++ {
+	for i := 0; i < len(b.Pos); i++ {
+		for j := 0; j < len(b.Pos); j++ {
 			if i == j {
 				continue
 			}
-			for k := 0; k < len(b.pos); k++ {
+			for k := 0; k < len(b.Pos); k++ {
 				if j == k || i == k {
 					continue
 				}
-				p1 := b.pos[i]
-				p2 := b.pos[j]
-				p3 := b.pos[k]
-				if p1.m == p2.m && p1.m == p3.m {
-					if p1.row == p2.row && p1.row == p3.row {
-						return p1.m
+				p1 := b.Pos[i]
+				p2 := b.Pos[j]
+				p3 := b.Pos[k]
+				if p1.M == p2.M && p1.M == p3.M {
+					if p1.Row == p2.Row && p1.Row == p3.Row {
+						return p1.M
 					}
-					if p1.col == p2.col && p1.col == p3.col {
-						return p1.m
+					if p1.Col == p2.Col && p1.Col == p3.Col {
+						return p1.M
 					}
-					if p1.row == 0 && p1.col == 0 && p2.row == 1 && p2.col == 1 && p3.row == 2 && p3.col == 2 {
-						return p1.m
+					if p1.Row == 0 && p1.Col == 0 && p2.Row == 1 && p2.Col == 1 && p3.Row == 2 && p3.Col == 2 {
+						return p1.M
 					}
-					if p1.row == 0 && p1.col == 2 && p2.row == 1 && p2.col == 1 && p3.row == 2 && p3.col == 0 {
-						return p1.m
+					if p1.Row == 0 && p1.Col == 2 && p2.Row == 1 && p2.Col == 1 && p3.Row == 2 && p3.Col == 0 {
+						return p1.M
 					}
 				}
 
@@ -160,29 +160,29 @@ func (b *Board) Fork(m Mark) (p *Pos) {
 	diff[0][1] = 2
 	diff[1][0] = 2
 
-	for i := 0; i < len(b.pos); i++ {
-		for j := 0; j < len(b.pos); j++ {
+	for i := 0; i < len(b.Pos); i++ {
+		for j := 0; j < len(b.Pos); j++ {
 			if i == j {
 				continue
 			}
-			p1 := b.pos[i]
-			p2 := b.pos[j]
-			if p1.m == p2.m {
-				if p1.row == p2.row {
-					p = &Pos{p1.m, p1.row, diff[p1.col][p2.col]}
-					if !b.Occupied(p.row, p.col) {
+			p1 := b.Pos[i]
+			p2 := b.Pos[j]
+			if p1.M == p2.M {
+				if p1.Row == p2.Row {
+					p = &Pos{p1.M, p1.Row, diff[p1.Col][p2.Col]}
+					if !b.Occupied(p.Row, p.Col) {
 						return
 					}
 				}
-				if p1.col == p2.col {
-					p = &Pos{p1.m, diff[p1.row][p2.row], p1.col}
-					if !b.Occupied(p.row, p.col) {
+				if p1.Col == p2.Col {
+					p = &Pos{p1.M, diff[p1.Row][p2.Row], p1.Col}
+					if !b.Occupied(p.Row, p.Col) {
 						return
 					}
 				}
-				if Abs(p1.row-p2.row) == Abs(p1.col-p2.col) {
-					p = &Pos{p1.m, diff[p1.row][p2.row], diff[p1.col][p2.col]}
-					if !b.Occupied(p.row, p.col) {
+				if Abs(p1.Row-p2.Row) == Abs(p1.Col-p2.Col) {
+					p = &Pos{p1.M, diff[p1.Row][p2.Row], diff[p1.Col][p2.Col]}
+					if !b.Occupied(p.Row, p.Col) {
 						return
 					}
 				}

@@ -8,7 +8,7 @@ func ShowStats(b *Board) {
 	fmt.Print(b.String())
 	p := b.LastMark()
 	if p != nil {
-		fmt.Printf("\t%s player marked [%d, %d]\n", p.m.String(), p.row, p.col)
+		fmt.Printf("\t%s player marked [%d, %d]\n", p.M.String(), p.Row, p.Col)
 	}
 	fmt.Println("\n\n")
 }
