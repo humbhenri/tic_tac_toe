@@ -18,3 +18,11 @@
     font-family: cursive;
 
  }
+ 
+ .message {
+     font-size: -webkit-xxx-large;
+     text-align: left;
+     color: blueviolet;
+     font-family: sans-serif;
+     margin: 20px;
+ }
