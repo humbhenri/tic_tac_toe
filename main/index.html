@@ -15,6 +15,12 @@
             </label>
         </div>
 
+        <div class="message">
+            <a href="#" id="restart" ng-click="restart()">
+            </a>
+        </div>
+
+
         <div class="board">
             <div class="row" ng-repeat="row in board">
                 <div class="cell" ng-repeat="cell in row" ng-click="markCell(cell)">

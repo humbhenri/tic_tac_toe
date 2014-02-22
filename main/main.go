@@ -3,34 +3,23 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	. "github.com/humbhenri/tic_tac_toe"
+	"github.com/humbhenri/tic_tac_toe"
 	"io/ioutil"
 	"net/http"
 )
 
-type End struct {
-	Winner Mark
-    Board Board
+type message struct {
+	Winner tic_tac_toe.Mark
+	Board  tic_tac_toe.Board
 }
 
-func Json(b Board) (s string) {
-	js, err := json.Marshal(b)
-	if err != nil {
-		fmt.Println(err)
-		s = ""
-		return
+func swapPlayer(player tic_tac_toe.Mark) tic_tac_toe.Mark {
+	if player == tic_tac_toe.X {
+		return tic_tac_toe.O
+	} else if player == tic_tac_toe.O {
+		return tic_tac_toe.X
 	}
-	s = string(js)
-	return
-}
-
-func swapPlayer(player Mark) Mark {
-	if player == X {
-		return O
-	} else if player == O {
-		return X
-	}
-	return None
+	return tic_tac_toe.None
 }
 
 func getMarkFromPlayer(body []byte) (int, int) {
@@ -46,7 +35,7 @@ func getMarkFromPlayer(body []byte) (int, int) {
 	return int(row.(float64)), int(col.(float64))
 }
 
-func sendJson(w http.ResponseWriter, st interface{}) {
+func sendJSON(w http.ResponseWriter, st interface{}) {
 	json, err := json.Marshal(st)
 	if err != nil {
 		panic(err)
@@ -56,28 +45,28 @@ func sendJson(w http.ResponseWriter, st interface{}) {
 	fmt.Println(string(json))
 }
 
-func gameEnded(b *Board) (bool, Mark) {
+func gameEnded(b *tic_tac_toe.Board) (bool, tic_tac_toe.Mark) {
 	end := false
 	win := b.Win()
-	if win != None || b.FreePositions() == 0 {
+	if win != tic_tac_toe.None || b.FreePositions() == 0 {
 		end = true
 	}
 	return end, win
 }
 
-func sendEndMessageIfGameOver(w http.ResponseWriter, b *Board) bool {
+func sendEndMessageIfGameOver(w http.ResponseWriter, b *tic_tac_toe.Board) bool {
 	end, mark := gameEnded(b)
 	if end {
-		sendJson(w, End{mark, *b})
+		sendJSON(w, message{mark, *b})
 		return true
 	}
 	return false
 }
 
 func main() {
-	b := &Board{}
+	b := &tic_tac_toe.Board{}
 	b.Start()
-	player := X
+	player := tic_tac_toe.X
 
 	fmt.Println("Listening on port 8080.")
 
@@ -99,18 +88,22 @@ func main() {
 			return
 		}
 		player = swapPlayer(player)
-		err = Play(b, player)
+		err = tic_tac_toe.Play(b, player)
 		if err != nil {
 			panic(err)
-		} else {
-			sendJson(w, *b)
 		}
 		if sendEndMessageIfGameOver(w, b) {
 			return
 		}
+		sendJSON(w, message{tic_tac_toe.None, *b})
 		player = swapPlayer(player)
 		fmt.Println(b.String())
 
+	})
+
+	http.HandleFunc("/restart", func(w http.ResponseWriter, r *http.Request) {
+		b.Start()
+		player = tic_tac_toe.X
 	})
 
 	http.ListenAndServe(":8080", nil)
