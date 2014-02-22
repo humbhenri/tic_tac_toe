@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Play make a play in board b with mark m
 func Play(b *Board, m Mark) error {
 	switch b.FreePositions() {
 	case 9:

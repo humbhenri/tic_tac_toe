@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Mark datatype
 type Mark int
 
 func (m Mark) String() string {
@@ -19,12 +20,14 @@ func (m Mark) String() string {
 	return " "
 }
 
+// Mark types
 const (
 	None Mark = iota
 	O
 	X
 )
 
+// Pos represents a mark in the board
 type Pos struct {
 	M   Mark
 	Row int
@@ -35,20 +38,24 @@ func (p *Pos) String() string {
 	return fmt.Sprintf("[%s, %d, %d]", p.M.String(), p.Row, p.Col)
 }
 
+// Board represents the board game
 type Board struct {
 	Free int
 	Pos  []Pos
 }
 
+// Start resets the board
 func (b *Board) Start() {
 	b.Free = 9
 	b.Pos = []Pos{}
 }
 
+// FreePositions return the number of free positions of the board
 func (b *Board) FreePositions() int {
 	return b.Free
 }
 
+// Put places the mark m in the row in and column j
 func (b *Board) Put(m Mark, i, j int) error {
 	if i < 0 || i > 2 || j < 0 || j > 2 {
 		return InvalidError{i, j}
@@ -64,6 +71,7 @@ func (b *Board) Put(m Mark, i, j int) error {
 	return nil
 }
 
+// Occupied returns true if there is a mark different of None in row i and column j
 func (b *Board) Occupied(i, j int) bool {
 	for _, p := range b.Pos {
 		if p.Row == i && p.Col == j && p.M != None {
@@ -73,6 +81,7 @@ func (b *Board) Occupied(i, j int) bool {
 	return false
 }
 
+// LastMark return the last position occupied
 func (b *Board) LastMark() *Pos {
 	if len(b.Pos) == 0 {
 		return nil
@@ -80,6 +89,7 @@ func (b *Board) LastMark() *Pos {
 	return &b.Pos[len(b.Pos)-1]
 }
 
+// Corner returns true if row i and column j represents a corner of the board
 func (b *Board) Corner(i, j int) bool {
 	return (i == 0 && (j == 0 || j == 2)) || (i == 2 && (j == 0 || j == 2))
 }
@@ -103,12 +113,14 @@ func (b *Board) String() string {
 	return buf.String()
 }
 
+// Edge returns true if row i and column j represents an edge of the board
 func (b *Board) Edge(i, j int) bool {
 	return (i == 0 && j == 1) ||
 		(i == 1 && (j == 0 || j == 2)) ||
 		(i == 2 && j == 1)
 }
 
+// Win returns the mark of the player if he/she wins, or None otherwise
 func (b *Board) Win() Mark {
 	for i := 0; i < len(b.Pos); i++ {
 		for j := 0; j < len(b.Pos); j++ {
@@ -144,13 +156,14 @@ func (b *Board) Win() Mark {
 	return None
 }
 
-func Abs(i int) int {
+func abs(i int) int {
 	if i < 0 {
 		return -i
 	}
 	return i
 }
 
+// Fork return the position if it's possible to win, or nil otherwise
 func (b *Board) Fork(m Mark) (p *Pos) {
 	var diff [3][3]int
 	diff[1][2] = 0
@@ -180,7 +193,7 @@ func (b *Board) Fork(m Mark) (p *Pos) {
 						return
 					}
 				}
-				if Abs(p1.Row-p2.Row) == Abs(p1.Col-p2.Col) {
+				if abs(p1.Row-p2.Row) == abs(p1.Col-p2.Col) {
 					p = &Pos{p1.M, diff[p1.Row][p2.Row], diff[p1.Col][p2.Col]}
 					if !b.Occupied(p.Row, p.Col) {
 						return
@@ -193,6 +206,7 @@ func (b *Board) Fork(m Mark) (p *Pos) {
 	return nil
 }
 
+// OccupiedError error if position occupied
 type OccupiedError struct {
 	m   Mark
 	row int
@@ -203,6 +217,7 @@ func (e OccupiedError) Error() string {
 	return "Put " + e.m.String() + " at row " + strconv.Itoa(e.row) + " and column " + strconv.Itoa(e.col) + ": already occupied"
 }
 
+// FullError error when board is full
 type FullError struct {
 }
 
@@ -210,6 +225,7 @@ func (e FullError) Error() string {
 	return "Board is full"
 }
 
+// InvalidError error when the move is invalid
 type InvalidError struct {
 	row int
 	col int
