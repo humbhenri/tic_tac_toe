@@ -3,7 +3,7 @@ tic_tac_toe
 
 Tic Tac Toe using Go
 
-![](https://github.com/humbhenri/tic_tac_toe/blob/master/tictactoe.png)
+![screenshot](https://github.com/humbhenri/tic_tac_toe/blob/master/tictactoe.png)
 
 To run:
 ```
