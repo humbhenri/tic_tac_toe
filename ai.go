@@ -5,13 +5,23 @@ import (
 	"time"
 )
 
+const (
+	FIRST          = 9
+	SECOND         = 8
+	SIX_MARKS_FREE = 6
+)
+
 // Play make a play in board b with mark m
 func Play(b *Board, m Mark) error {
 	switch b.FreePositions() {
-	case 9:
+	case FIRST:
 		return markACorner(b, m)
-	case 8:
+	case SECOND:
 		return doSecondPlay(b, m)
+	case SIX_MARKS_FREE:
+		if b.MarkOf(1, 1) == m && ((b.MarkOf(0, 0) == m.Opposite() && b.MarkOf(2, 2) == m.Opposite()) || (b.MarkOf(0, 2) == m.Opposite() && b.MarkOf(2, 0) == m.Opposite())) {
+			return markEdge(b, m)
+		}
 	}
 
 	if p := b.Fork(m); p != nil {
@@ -59,4 +69,11 @@ func markRandom(b *Board, m Mark) error {
 		}
 	}
 	return nil
+}
+
+func markEdge(b *Board, m Mark) error {
+	edges := [][]int{{0, 1}, {1, 0}, {1, 2}, {2, 1}}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	p := edges[r.Intn(len(edges))]
+	return b.Put(m, p[0], p[1])
 }

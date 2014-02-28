@@ -100,3 +100,17 @@ func TestPlayWinIfInFork(t *testing.T) {
 			p.Row, p.Col)
 	}
 }
+
+func TestPlayIfMarkedCornersAndPieceInCenterMarkEdge(t *testing.T) {
+	b := Board{}
+	b.Start()
+	b.Put(X, 0, 0)
+	b.Put(O, 1, 1)
+	b.Put(X, 2, 2)
+	check(Play(&b, O), t)
+	p := b.LastMark()
+	if !b.Edge(p.Row, p.Col) {
+		t.Errorf("play should be put in and edge but was %d, %d instead",
+			p.Row, p.Col)
+	}
+}

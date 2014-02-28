@@ -20,6 +20,18 @@ func (m Mark) String() string {
 	return " "
 }
 
+// Opposite returns the opposite of this mark
+func (m Mark) Opposite() Mark {
+	switch m {
+	case O:
+		return X
+	case X:
+		return O
+	default:
+		return None
+	}
+}
+
 // Mark types
 const (
 	None Mark = iota
@@ -204,6 +216,16 @@ func (b *Board) Fork(m Mark) (p *Pos) {
 	}
 
 	return nil
+}
+
+// MarkOf return mark of row i and column j
+func (b *Board) MarkOf(i, j int) Mark {
+	for _, p := range b.Pos {
+		if p.Row == i && p.Col == j {
+			return p.M
+		}
+	}
+	return None
 }
 
 // OccupiedError error if position occupied
